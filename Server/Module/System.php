@@ -10,11 +10,11 @@ class System{
   public static function info(array $config){
     return array(
       'code'=>0,
-      'message'=>'登录成功',
+      'message'=>'获取成功',
       'data'=>array(
-        'account'=>'test',
-        'gender'=>'m',
-        'time'=>'1900-01-01 12:34:12',
+        'cpu'=>'ok',
+        'memory'=>'ok',
+        'ssd'=>'ok',
       ),
     );
   }
