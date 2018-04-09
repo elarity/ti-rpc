@@ -1,76 +1,63 @@
 <?php
-//添加命令行检测
-if('cli'!=php_sapi_name()){
-  exit('The server must be run under CLI SAPI');
+
+if( 'cli' !== php_sapi_name() ){	
+	exit( '服务只能运行在cli sapi模式下'.PHP_EOL );
 }
-define('DS',DIRECTORY_SEPARATOR);
-define('ROOT',__DIR__);
-define('SERVER',ROOT.DS.'Server');
-//载入常用函数
-require_once SERVER.DS.'Library'.DS.'Function.php';
-//ti-rpc config file
-require_once SERVER.DS.'Config'.DS.'Ti.conf';
-//使用spl autoload register注册自定义自动加载函数
-spl_autoload_register('autoload');
-//开启服务
-if(!isset($argv[1])){
-  exit('输入php index.php help获得使用帮助'.PHP_EOL);
+
+// 定义系统常量
+define( 'DS', DIRECTORY_SEPARATOR );
+define( 'ROOT', __DIR__.DS );
+
+// 载入系统函数库
+require_once ROOT."System".DS."Library".DS."Function.php";
+
+// 自定义autoload方法
+function autoload( $class ){
+  $includePath = str_replace( '\\', DS, $class );
+  $targetFile = ROOT.$includePath.'.php';
+  require_once( $targetFile );
 }
-//启动服务
-$action=end($argv);
-$argument_count=count($argv);
-if('start'===$action){
-  //判断有没有-d参数
-  $config['ti']['daemonize']='-d'===$argv[$argument_count-2]?true:false;
-  //开启TCP服务
-  $server=new \Server\Server($config);
-  //注册到服务发现池
-  //$server->register();exit;
-  $server->start();
-}else if('stop'===$action){
-  $pid_string=file_get_contents($config['ti']['pid_file']);
-  $pid_array=explode(',',$pid_string);
-  $master_pid=$pid_array[0];
-  $manager_pid=$pid_array[1];
-  if(posix_kill($master_pid,SIGTERM)){
-    echo '服务已停止'.PHP_EOL;
-  }else{
-    echo '服务停止失败'.PHP_EOL;
+spl_autoload_register( 'autoload' );
+
+// 继承Core父类
+class Gmu extends System\Core{
+
+  // 拉起worker进程前需要做的初始化工作
+  public function initWorker(){}
+
+  // 拉起tasker进程前需要做的初始化工作
+  // 比如初始化数据库类库
+  // 比如初始化其他类库
+  public function initTasker( \swoole_server $server, $workerId ){
+		$di = \System\Component\Di::getInstance();
+		$di->set( 'mysql', \System\Library\Mysql::class, [] );
+		$di->set( 'cacheRedis', \System\Library\CacheRedis::class, [] );
+		//$di->set( 'aes', \System\Library\Aes::class, [] );
+		//$di->set( 'validator', \System\Library\Valitron\Validator::class, [] );
   }
-}else if('reload'===$action){
-  $pid_string=file_get_contents($config['ti']['pid_file']);
-  $pid_array=explode(',',$pid_string);
-  $master_pid=$pid_array[0];
-  $manager_pid=$pid_array[1];
-  if(posix_kill($master_pid,SIGUSR1)){
-    echo '重启所有worker进程成功'.PHP_EOL;
-  }else{
-    echo '重启所有worker进程失败'.PHP_EOL;
-  } 
-}else if('restart'===$action){
-  $pid_string=file_get_contents($config['ti']['pid_file']);
-  $pid_array=explode(',',$pid_string);
-  $master_pid=$pid_array[0];
-  $manager_pid=$pid_array[1];
-  if(posix_kill($master_pid,SIGTERM)){
-    echo '服务已停止'.PHP_EOL;
-    echo '服务正在重启...'.PHP_EOL;
-    sleep(2);
-    $server=new \Server\Server($config);
-    $server->start();
-  }else{
-    echo '服务停止失败'.PHP_EOL;
+
+  // 具体业务逻辑
+  public function process( $server, $param ){
+
+    // 将param抛给model中的method，并获得到处理完后的数据
+		$targetModel = '\Controller\\'.ucfirst( $param['param']['model'] );
+    $targetModel = new $targetModel; 
+		$targetConfig['param'] = $param['param']['param'];
+    $sendData = call_user_func_array( array( $targetModel, $param['param']['method'] ), array( $targetConfig ) );
+		return $sendData;
+
   }
-}else if('status'===$action){
-  //exit('服务状态'.PHP_EOL);
-  print_r(\Server\Server::status());
-}else if('help'===$action){
-  echo '---------------------使用帮助------------------'.PHP_EOL;
-  echo 'php index.php start，以非daemon方式开启服务'.PHP_EOL;
-  echo 'php index.php -d start，以daemon方式开启服务'.PHP_EOL;
-  echo 'php index.php reload，修改业务代码后，热加载，相当于重启所有worker进程和task进程'.PHP_EOL;
-  echo 'php index.php restart，重启服务'.PHP_EOL;
-  echo 'php index.php stop，停止服务'.PHP_EOL;
-}else{
-  exit('arguments : start|stop|restart|status|help'.PHP_EOL);
+
 }
+
+$gmu = new Gmu;
+
+// 开启一些配置项
+$gmu->initSetting(array(
+	'http' => array(
+		'host' => '0.0.0.0',
+	),
+	'tcp' => array(
+	),
+));
+$gmu->run();
