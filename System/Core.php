@@ -581,9 +581,9 @@ abstract class Core{
     echo PHP_EOL.PHP_EOL.PHP_EOL;
     echo "--------------------------------------------------------------------------".PHP_EOL;
     echo "|                   ------- *     |----  |----   ----                    |".PHP_EOL;
-    echo "|                      |    |     |    | |    | |    |                   |".PHP_EOL;
+    echo "|                      |    |     |    | |    | |                        |".PHP_EOL;
     echo "|                      |    |     |----  |----  |                        |".PHP_EOL;
-    echo "|                      |    |     | \    |      |    |                   |".PHP_EOL;
+    echo "|                      |    |     | \    |      |                        |".PHP_EOL;
     echo "|                      |    |     |   \  |       ----                    |".PHP_EOL;
     echo "--------------------------------------------------------------------------".PHP_EOL;
     echo "\033[1A\n\033[K-----------------------\033[47;30m Ti Server \033[0m-----------------------------\n\033[0m";
@@ -603,9 +603,9 @@ abstract class Core{
     echo PHP_EOL.PHP_EOL.PHP_EOL;
     echo "--------------------------------------------------------------------------".PHP_EOL;
     echo "|                   ------- *     |----  |----   ----                    |".PHP_EOL;
-    echo "|                      |    |     |    | |    | |    |                   |".PHP_EOL;
+    echo "|                      |    |     |    | |    | |                        |".PHP_EOL;
     echo "|                      |    |     |----  |----  |                        |".PHP_EOL;
-    echo "|                      |    |     | \    |      |    |                   |".PHP_EOL;
+    echo "|                      |    |     | \    |      |                        |".PHP_EOL;
     echo "|                      |    |     |   \  |       ----                    |".PHP_EOL;
     echo "--------------------------------------------------------------------------".PHP_EOL;
     echo 'USAGE: php index.php commond'.PHP_EOL;
