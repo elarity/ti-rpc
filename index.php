@@ -11,13 +11,17 @@ define( 'ROOT', __DIR__.DS );
 // 载入系统函数库
 require_once ROOT."System".DS."Library".DS."Function.php";
 
+require_once ROOT.'vendor'.DS.'autoload.php';
+
 // 自定义autoload方法
+/*
 function autoload( $class ){
   $includePath = str_replace( '\\', DS, $class );
   $targetFile = ROOT.$includePath.'.php';
   require_once( $targetFile );
 }
 spl_autoload_register( 'autoload' );
+ */
 
 // 继承Core父类
 class Gmu extends System\Core{

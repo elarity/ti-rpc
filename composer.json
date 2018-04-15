@@ -1,0 +1,12 @@
+{
+    "require": {
+        "yansongda/pay": "^1.0"
+    },
+		"autoload": {
+			  "psr-4": {
+				  	"System\\": "System",
+				  	"Controller\\": "Controller",
+				  	"Model\\": "Model"
+				}
+		}
+}

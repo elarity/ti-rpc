@@ -291,16 +291,16 @@ abstract class Core{
    * @param : type
    */
   public function request( $request, $response ){
+    $fd = $request->fd;
     //解析客户端发来的数据
     $data = Packet::decode( $request->rawContent() );
     if( null === $data || false === $data ){
-      $response->send( $fd, Packet::encode(array(
+      $response->end( Packet::encode(array(
         'code' => -1,
         'message' => 'Wrong Data Format',
-      )));
+      ) ) );
       return; 
     }
-    $fd = $request->fd;
     $data['fd'] = $request->fd;
     /*
     SW : 单个请求,等待结果
