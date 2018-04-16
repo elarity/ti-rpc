@@ -4,5 +4,8 @@
 				  	"System\\": "System",
 				  	"Application\\": "Application"
 				}
+		},
+		"require": {
+				"php-curl-class/php-curl-class": "^8.0"
 		}
 }

@@ -4,6 +4,8 @@
 
 我不会刻意去推广这个，也会长期改进维护，只希望能帮到一些人。
 
+
+
 ## 功能简介：
 1.同时提供tcp和http两种方式。
 
@@ -20,6 +22,20 @@
 3.客户端可以通过长链接连接RPC服务，避免TCP握挥手带来的性能损耗
 
 4.其余特性参考 http://wiki.swoole.com
+
+
+
+## 部署安装
+1. git clone https://github.com/elarity/ti-rpc.git
+2. 到ti-rpc根目录下执行php index.php查看使用方式
+
+已经加入对composer的支持，根目录下有个composer.json，请不要随意修改其中内容如果你明白你在做什么操作。如果你需要从github找到一个php库并使用，比如这个[curl类](https://github.com/php-curl-class/php-curl-class)，那么你需要在ti rpc的根目录下执行如下命令：
+
+```php
+composer require php-curl-class/php-curl-class
+```
+这个时候，ti rpc将会采用composer自动加载器而不是自定义的自动加载，从而可以方便粗暴快捷简单地使用任何一个php composer库
+
 
 ## 使用方式
 ##### php index.php [command] [option]
