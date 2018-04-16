@@ -318,7 +318,7 @@ abstract class Core{
         break;
       case 'SN':
         $this->httpServer->task( $data );
-        $response->send( $fd, Packet::encode( array(
+        $response->end( Packet::encode( array(
           'code' => 0,
           'message' => '任务投递成功',
         ) ) );
@@ -343,21 +343,21 @@ abstract class Core{
         break;
       case 'MN':
         foreach( $data['param'] as $key=>$item ){
-          $taskData=array(
-            'id' => $data['requestId'],
+          $taskData = array(
+            'requestId' => $data['requestId'],
             'fd' => $fd,
             'type' => $data['type'],
-            'request' => $item,
+            'param' => $item,
           );
           $taskId = $this->httpServer->task( $taskData ); 
         } 
-        $response->send( $fd, Packet::encode( array(
+        $response->end( Packet::encode( array(
           'code' => 0,
           'message' => '任务投递成功',
         ) ) );
         break;
       default:
-        $response->send( $fd, Packet::encode(array(
+        $response->end( Packet::encode(array(
           'code' => -1,
           'message' => 'Wrong Request Type',
         )));
@@ -419,10 +419,10 @@ abstract class Core{
       case 'MN':
         foreach( $data['param'] as $key=>$item ){
           $taskData=array(
-            'id' => $data['requestId'],
+            'requestId' => $data['requestId'],
             'fd' => $fd,
             'type' => $data['type'],
-            'request' => $item,
+            'param' => $item,
           );
           $taskId = $server->task( $taskData ); 
         } 
