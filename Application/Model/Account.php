@@ -1,5 +1,5 @@
 <?php
-namespace Model;
+namespace Application\Model;
 class Account{
 
 	private $Di = null;

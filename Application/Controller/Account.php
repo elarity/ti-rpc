@@ -1,5 +1,6 @@
 <?php
-namespace Controller;
+namespace Application\Controller;
+use Application\Model as Model;
 
 class Account{
 
@@ -7,15 +8,11 @@ class Account{
 
   public function __construct(){
 
-		$this->accountModel = new \Model\Account();
+		$this->accountModel = new Model\Account();
 
 	}	
 
   public function login(){
-
-		$pay = new \Yansongda\Pay\Pay();
-		print_r( $pay );
-
     $loginResult = $this->accountModel->login();
     return $loginResult; 
   }
