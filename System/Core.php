@@ -291,17 +291,27 @@ abstract class Core{
    * @param : type
    */
   public function request( $request, $response ){
+
     $fd = $request->fd;
+
     //解析客户端发来的数据
-    $data = Packet::decode( $request->rawContent() );
-    if( null === $data || false === $data ){
-      $response->end( Packet::encode(array(
+		$rawContent = trim( $request->rawContent() );
+    $rawContentArr = Packet::decode( $request->rawContent(), 'http' );
+    if( false === $rawContentArr ){
+      $response->end( Packet::encode( array(
         'code' => -1,
         'message' => 'Wrong Data Format',
-      ) ) );
+      ), 'http' ) );
       return; 
-    }
-    $data['fd'] = $request->fd;
+		}
+	   	
+		// 组装数据包
+		$data = $rawContentArr;
+    $data['fd'] = $fd;
+		$data['swoole']['header'] = $request->header;
+		$data['swoole']['server'] = $request->server;
+		$data['rawContent'] = $rawContent;
+
     /*
     SW : 单个请求,等待结果
     SN : 单个请求,不等待结果
@@ -321,7 +331,7 @@ abstract class Core{
         $response->end( Packet::encode( array(
           'code' => 0,
           'message' => '任务投递成功',
-        ) ) );
+        ), 'http' ) );
         break;
 	    // 多个请求,等待结果
       case 'MW':
@@ -334,7 +344,6 @@ abstract class Core{
             'name' => $key,
             'param' => $item,
           );
-          //$taskId = $this->httpServer->task( $taskData ); 
           $taskId = $this->httpServer->task( $taskData, -1, function ( $server, $taskId, $resultData ) use ( $response ) {
             $this->onHttpFinished( $server, $taskId, $resultData, $response );
           } );
@@ -354,13 +363,13 @@ abstract class Core{
         $response->end( Packet::encode( array(
           'code' => 0,
           'message' => '任务投递成功',
-        ) ) );
+        ), 'http' ) );
         break;
       default:
-        $response->end( Packet::encode(array(
+        $response->end( Packet::encode( array(
           'code' => -1,
           'message' => 'Wrong Request Type',
-        )));
+        ) ), 'http' );
         break;
     }
     //将fd作为data传给task进程
@@ -501,6 +510,7 @@ abstract class Core{
    * @param : response 
    */
   private function onHttpFinished( \swoole_server $server, $taskId, $taskData, $response ){
+
     // 判断是否为需要取回结果的任务
     if( !isset( self::$taskData[$taskData['requestId']] ) ){
       return;
@@ -513,14 +523,14 @@ abstract class Core{
     switch( $taskData['type'] ){
       //单个的
       case 'SW':
-        $response->end( Packet::encode( self::$taskData[$taskData['requestId']]['result']['single'] ) );
+        $response->end( Packet::encode( self::$taskData[$taskData['requestId']]['result']['single'], 'http' ) );
         unset( self::$taskData[$taskData['requestId']] );
         return true;
         break;
       //多个的
       case 'MW':
         if( 0 === count( self::$taskData[$taskData['requestId']]['taskKey'] ) ){
-          $response->end( Packet::encode( self::$taskData[$taskData['requestId']]['result'] ) );
+          $response->end( Packet::encode( self::$taskData[$taskData['requestId']]['result'], 'http' ) );
           unset( self::$taskData[$taskData['requestId']] );
           return true;
         }else{
