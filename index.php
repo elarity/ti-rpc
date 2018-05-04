@@ -4,6 +4,10 @@ if( 'cli' !== php_sapi_name() ){
 	exit( '服务只能运行在cli sapi模式下'.PHP_EOL );
 }
 
+if( !extension_loaded('swoole') ){
+	exit( '请安装swoole扩展'.PHP_EOL );
+}
+
 // 定义系统常量
 define( 'DS', DIRECTORY_SEPARATOR );
 define( 'ROOT', __DIR__.DS );
