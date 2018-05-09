@@ -4,6 +4,9 @@ use System\Component\Packet;
 
 abstract class Core{
 
+  private $rootPath = '';
+  private $directorySep = '';
+
   /*
    * @desc : http服务器实例
    */
@@ -19,7 +22,7 @@ abstract class Core{
   /*
    * @desc : 处理完毕的数据会暂时存储到这里
    */
-  protected static $taskData = [];
+  protected static $taskData = array();
 
 
   /*
@@ -45,18 +48,17 @@ abstract class Core{
     'daemonize' => FALSE,
     'package_max_length' => 1024,
     'buffer_output_size' => 1024,
-    'log_file' => ROOT.'System'.DS.'Log'.DS.'Ti.log',
-    //'pid_file' => ROOT.'Ti.pid',
-    'pidFile' => ROOT.'Ti.pid',
-    'log_level' => 0,
+    //'log_file' => $this->rootPath.'System/Log/Ti.log',
+    //'pidFile' => $this->rootPath.'Ti.pid',
+    //'workerPidFile' => '/home/elarity/ti-rpc/Worker.pid',
+    //'taskerPidFile' => '/home/elarity/ti-rpc/Tasker.pid',
+    'log_level' => 2,
     'dispatch_mode' => 3,
     'task_ipc_mode' => 1,
     'backlog' => 2000,
     'task_max_request' => 5,
     'host' => '0.0.0.0',
     'port' => 9802,
-    'workerPidFile' => ROOT.'Worker.pid',
-    'taskerPidFile' => ROOT.'Tasker.pid',
   );  
 
 
@@ -75,7 +77,7 @@ abstract class Core{
   /*
    * @desc : 暂时未开发完毕，服务发现
    */
-  private $discoverySetting = [];
+  private $discoverySetting = array();
 
 
   /*
@@ -83,6 +85,10 @@ abstract class Core{
    */
   public function initSetting( array $setting ){
 		$this->httpSetting['host'] = $this->getLocalIp();
+    $this->httpSetting['log_file'] = $this->rootPath.'System/Log/Ti.log';
+    $this->httpSetting['pidFile'] = $this->rootPath.'Ti.pid';
+    $this->httpSetting['workerPidFile'] = $this->rootPath.'Worker.pid';
+    $this->httpSetting['taskerPidFile'] = $this->rootPath.'Tasker.pid';
     if( isset( $setting['http'] ) ){
       $this->httpSetting = array_merge( $this->httpSetting, $setting['http'] );
     }   
