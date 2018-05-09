@@ -78,7 +78,7 @@ $mn = array(
 
 
 
-$jsonData = json_encode( $sn ).'\r\n';
+$jsonData = json_encode( $sw );
 $curl = curl_init();
 curl_setopt_array( $curl, array(
   CURLOPT_PORT => 9802,
@@ -101,7 +101,8 @@ curl_close($curl);
 if ( $err ) {
   echo "cURL Error #:" . $err;
 } else {
-  echo $response;
+  //echo $response;
+  print_r( json_decode( $response ) );
 }
 
 
