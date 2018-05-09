@@ -38,7 +38,6 @@ class Di{
     if( isset( $this->container[$key] ) ){
       $result = $this->container[$key];
       if( is_object( $result['obj'] ) ){
-			  //echo time().' : is_object'.PHP_EOL;
         return $result['obj'];
       }else if( is_callable( $result['obj'] ) ){
         $ret =  call_user_func_array( $result['obj'], $result['params'] );
@@ -49,14 +48,6 @@ class Di{
       }else if( is_string( $result['obj'] ) && class_exists( $result['obj'] ) ){
         $reflection = new \ReflectionClass( $result['obj'] );
         $ins = $reflection->newInstanceArgs( $result['params'] );
-				//if( 'cacheRedis'==$key ){
-					//echo $result['obj'].PHP_EOL;
-					//echo time().' : is_string'.PHP_EOL;
-					//print_r( $result );
-					//var_dump( $reflection );
-					//var_dump( $ins );
-					//var_dump( $ins->hgetall('account-3') );
-				//}
         if( $result['singleton'] ){
           $this->set( $key, $ins );
         }
