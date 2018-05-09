@@ -40,7 +40,6 @@ class Gmu extends System\Core{
   // 比如初始化其他类库
   public function initTasker( \swoole_server $server, $workerId ){
 		$di = \System\Component\Di::getInstance();
-		$di->set( 'mysql', \System\Library\Mysql::class, [] );
   }
 
   // 具体业务逻辑
