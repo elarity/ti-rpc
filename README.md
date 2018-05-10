@@ -10,6 +10,22 @@
 
 2.加入包头定长拆包协议
 
+## VIM配置
+
+set shiftwidth=2
+
+set softtabstop=2
+
+set tabstop=2
+
+set rnu
+
+set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
+
+set enc=utf8
+
+set fencs=utf8,gbk,gb2312,gb18030
+
 
 ## 功能简介：
 1.同时提供tcp和http两种方式。
