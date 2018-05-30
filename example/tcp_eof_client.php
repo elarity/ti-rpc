@@ -88,14 +88,4 @@ if ( !$client->connect( $host, $port, -1 ) ){
 $client->send( json_encode( $mw ).'\r\n' );
 $jsonString = $client->recv();
 $jsonString = str_replace( '\r\n', '', $jsonString );
-print_r( json_decode( $jsonString ) );
-
-$client->send( json_encode( $sw ).'\r\n' );
-$jsonString = $client->recv();
-$jsonString = str_replace( '\r\n', '', $jsonString );
-print_r( json_decode( $jsonString ) );
-
-$client->close();
-
-
-
+print_r( json_decode( $jsonString, true ) );

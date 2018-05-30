@@ -59,11 +59,13 @@ class Gmu extends System\Core{
 $gmu = new Gmu;
 
 // 开启一些配置项
-$gmu->initSetting(array(
+$gmu->initSetting( array(
 	'http' => array(
 		'host' => '0.0.0.0',
 	),
-	'tcp' => array(
+	'tcp' => array(),
+	'custom' => array(
+		'tcpPack' => 'length',    // 1.eof，eof拆包 2.length，length拆包
 	),
-));
+) );
 $gmu->run();

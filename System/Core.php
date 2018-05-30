@@ -5,6 +5,7 @@ use System\Component\Packet;
 abstract class Core{
 
   private $rootPath = '';
+
   private $directorySep = '';
 
   /*
@@ -17,13 +18,11 @@ abstract class Core{
    * @desc : tcp服务器实例
    */
   private $tcpServer = null; 
-
   
   /*
    * @desc : 处理完毕的数据会暂时存储到这里
    */
   protected static $taskData = array();
-
 
   /*
    * @desc : swoole各个进程角色的title
@@ -34,7 +33,6 @@ abstract class Core{
     'worker' => 'Ti service worker process',
     'tasker' => 'Ti service tasker process',
   );
-
 
   /*
    * @desc : swoole http服务的配置
@@ -61,17 +59,24 @@ abstract class Core{
     'port' => 9802,
   );  
 
-
   /*
    * @desc : swoole tcp服务的配置
    */
   private $tcpSetting = array(
-    'open_eof_check' => TRUE,
-    'package_eof' => '\r\n',
-    'open_eof_split' => TRUE,
+    'open_length_check' => 1,
+    'package_length_type' => 'N',
+    'package_length_offset' => 0,
+    'package_body_offset' => 4,
     'heartbeat_check_interval' => 60,
     'port' => 9801,
   );
+
+	/*
+	 * @desc : 用户自定义配置
+	 */
+	private $customSetting = array(
+	  'tcpPack' => 'length',
+	);
 
 
   /*
@@ -98,6 +103,23 @@ abstract class Core{
 		if( isset( $setting['discovery'] ) ){
 			$this->discoverySetting = $setting['discovery'];
 		}
+		if( isset( $setting['custom'] ) ){
+      $this->customSetting = array_merge( $this->customSetting, $setting['custom'] );
+	  }
+		// 查看tcp拆包方式
+		if( 'eof' == $this->customSetting['tcpPack'] ){
+			$this->tcpSetting['open_eof_check'] = true;	
+			$this->tcpSetting['package_eof'] = '\r\n';	
+			$this->tcpSetting['open_eof_split'] = true;
+		}	else if( 'length' == $this->customSetting['tcpPack'] ){
+			$this->tcpSetting['open_length_check'] = true;	
+			$this->tcpSetting['package_length_type'] = 'N';
+			$this->tcpSetting['package_length_offset'] = 0;
+			$this->tcpSetting['package_body_offset'] = 4;
+		}
+  	Packet::setting( array(
+			'tcpPack' => $this->customSetting['tcpPack'],
+		) );
   }
 
 
