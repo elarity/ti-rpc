@@ -89,6 +89,7 @@ abstract class Core{
    * @desc : 初始化服务配置
    */
   public function initSetting( array $setting ){
+		$this->rootPath = ROOT;
 		$this->httpSetting['host'] = $this->getLocalIp();
     $this->httpSetting['log_file'] = $this->rootPath.'System/Log/Ti.log';
     $this->httpSetting['pidFile'] = $this->rootPath.'Ti.pid';
