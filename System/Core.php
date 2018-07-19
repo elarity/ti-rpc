@@ -86,6 +86,12 @@ abstract class Core{
 
 
   /*
+   * @desc : 服务注册
+   */
+  private $serviceRegisterSetting = array();
+
+
+  /*
    * @desc : 初始化服务配置
    */
   public function initSetting( array $setting ){
@@ -106,6 +112,9 @@ abstract class Core{
 		}
 		if( isset( $setting['custom'] ) ){
       $this->customSetting = array_merge( $this->customSetting, $setting['custom'] );
+	  }
+		if( isset( $setting['serviceRegisterSetting'] ) ){
+      $this->serviceRegisterSetting = array_merge( $this->serviceRegisterSetting, $setting['serviceRegisterSetting'] );
 	  }
 		// 查看tcp拆包方式
 		if( 'eof' == $this->customSetting['tcpPack'] ){
@@ -158,9 +167,10 @@ abstract class Core{
 		$option = isset( $argv[2] ) ? $argv[2] : null ;
 		switch( $command ){
 		  case 'start':
+        // 只有以daemon形式启动服务的时候，将服务注册到redis
 				if( '-d' === $option ){
 					$this->httpSetting['daemonize'] = true;
-					$this->_discovery();
+					$this->_registerService();
 				}
 				$this->_run();
 		  	break;
@@ -201,9 +211,9 @@ abstract class Core{
 		  	break;
 		  case 'stop':
 				// 删除redis中服务注册的信息
-        //$redis = new \Redis();
-				//$redis->connect( $this->discoverySetting['host'], $this->discoverySetting['port'] );
-				//$redis->hdel( $this->discoverySetting['group'], $this->httpSetting['host'] );
+        $redis = new \Redis();
+				$redis->connect( $this->serviceRegisterSetting['host'], $this->serviceRegisterSetting['port'] );
+				$redis->hdel( $this->serviceRegisterSetting['serviceName'], $this->getLocalIp() );
 				// 获取pid们
         $idJson = file_get_contents( $this->httpSetting['pidFile'] );  
 				$idArray = json_decode( $idJson, true );
@@ -570,19 +580,27 @@ abstract class Core{
   }
 
 
-  private function _discovery(){
+  /*
+   * @desc : 将服务注册到redis中
+   */
+  private function _registerService(){
 		if( true === $this->httpSetting['daemonize'] ){
-	    if( isset( $this->discoverySetting['host'] ) && isset( $this->discoverySetting['port'] ) ){
+	    if( isset( $this->serviceRegisterSetting['host'] ) && isset( $this->serviceRegisterSetting['port'] ) ){
 	      $redis = new \Redis();
-	      if( false !== $redis->connect( $this->discoverySetting['host'], $this->discoverySetting['port'] ) ){
-			  	$redis->hmset( $this->discoverySetting['group'], array(
-			  		$this->httpSetting['host'] => $this->httpSetting['port'].':'.$this->tcpSetting['port'],
+	      if( false !== $redis->connect( $this->serviceRegisterSetting['host'], $this->serviceRegisterSetting['port'] ) ){
+          // 大概数据类似于： 
+          // account-server => [
+          //   192.168.0.111 => 6666:6667 前面是http端口，后面是tcp端口
+          // ]
+			  	$redis->hmset( $this->serviceRegisterSetting['serviceName'], array(
+			  		//$this->httpSetting['host'] => $this->httpSetting['port'].':'.$this->tcpSetting['port'],
+			  		$this->getLocalIp() => $this->httpSetting['port'].':'.$this->tcpSetting['port'],
 			  	) ); 
 			  }else{
-			    exit('Service Register Fail.'.PHP_EOL); 	
+          echo " !!! WARNING !!! : Service Register To Redis Fail!".PHP_EOL;
+			    //exit('Service Register Fail.'.PHP_EOL); 	
 			  } 
 			} 
-		}else{
 		}
   }
 

@@ -62,10 +62,19 @@ $gmu = new Gmu;
 $gmu->initSetting( array(
 	'http' => array(
 		'host' => '0.0.0.0',
+    'port' => 6666,
 	),
-	'tcp' => array(),
+	'tcp' => array(
+    'port' => 6667,
+  ),
 	'custom' => array(
 		'tcpPack' => 'length',    // 1.eof，eof拆包 2.length，length拆包
 	),
+  // 服务注册
+  'serviceRegisterSetting' => array(
+    'host' => '127.0.0.1',
+    'port' => 6379,
+    'serviceName' => 'account-service',
+  ),  
 ) );
 $gmu->run();
