@@ -71,4 +71,4 @@ composer require php-curl-class/php-curl-class
 ![](http://static.ti-node.com/github_tirpc_1.png)
 
 ## 联系方式：
-QQ群：712105788
+wechat：sbyuanmaomao
