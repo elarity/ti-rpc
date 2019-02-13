@@ -60,6 +60,8 @@ composer require php-curl-class/php-curl-class
 这个时候，ti rpc将会采用composer自动加载器而不是自定义的自动加载，从而可以方便粗暴快捷简单地使用任何一个php composer库
 
 
+
+
 ## 使用方式
 ##### php index.php [command] [option]
 - start，以非daemon形式开始服务，也就是debug模式
@@ -69,6 +71,9 @@ composer require php-curl-class/php-curl-class
 - status，查看服务状态
 
 ![](http://static.ti-node.com/github_tirpc_1.png)
+
+## 内容添加
+1. 添加curl和RNCryptor加解密库
 
 ## 联系方式：
 wechat：sbyuanmaomao
